@@ -17,4 +17,11 @@ urlpatterns = [
     # 第一个参数如果有正则参数 小括号 则正则分组匹配内容会作为实参传递给视图函数
     url(r'^detail/(\d+)/$', views.detail, name='detail'),
     url(r'^about/$', views.about, name='about'),
+
+    url(r'^deletebook/(\d+)/$', views.deletebook, name='deletebook'),
+    url(r'^deletehero/(\d+)/$', views.deletehero, name='deletehero'),
+    url(r'^addhero/(\d+)/$', views.addhero, name='addhero'),
+    url(r'^edithero/(\d+)/$', views.edithero, name='edithero'),
+    url(r'^addbook/$', views.addbook, name='addbook'),
+    url(r'^editbook/(\d+)/$', views.editbook, name='editbook'),
 ]

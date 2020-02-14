@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, reverse
 from django.template import loader
 from .models import Book, Hero
 # Create your views here.
@@ -7,7 +7,7 @@ from .models import Book, Hero
 # 在此处接收请求 处理数据 返回响应
 
 # 3.编写对应的视图函数
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 
 
 def index(resquest):
@@ -38,5 +38,79 @@ def detail(resquest, bookid):
 def about(resquest):
     return HttpResponse("这里是关于")
 
+
+def deletebook(resquest, bookid):
+    book = Book.objects.get(id=bookid)
+    book.delete()
+    # return HttpResponse("删除成功")
+    # 删除一本书之后 仍然回到列表页
+    # return HttpResponseRedirect(redirect_to='/')
+    # 在view中解除硬编码
+    url = reverse("booktest:index")
+    return redirect(to=url)
+
+
+def deletehero(resquest, heroid):
+    hero = Hero.objects.get(id=heroid)
+    # 一定要先获取 再删除
+    bookid = hero.book.id
+    hero.delete()
+    url = reverse("booktest:detail", args=(bookid,))
+    return redirect(to=url)
+
+
+def addhero(resquest, bookid):
+    if resquest.method == "GET":
+        return render(resquest, 'addhero.html')
+    elif resquest.method == "POST":
+        hero = Hero()
+        hero.name = resquest.POST.get("heroname")
+        hero.content = resquest.POST.get("herocontent")
+        hero.gender = resquest.POST.get("sex")
+        hero.book = Book.objects.get(id=bookid)
+        hero.save()
+        url = reverse("booktest:detail", args=(bookid,))
+        return redirect(to=url)
+
+
+def addbook(resquest):
+    if resquest.method == "GET":
+        return render(resquest, 'addbook.html')
+    elif resquest.method == "POST":
+        book = Book()
+        book.title = resquest.POST.get("booktitle")
+        book.price = resquest.POST.get("bookprice")
+        book.pub_date = resquest.POST.get("pub_date")
+        book.save()
+        url = reverse("booktest:index")
+        return redirect(to=url)
+
+
+def edithero(resquest, heroid):
+    hero = Hero.objects.get(id=heroid)
+    # 使用get方法进入英雄的编辑页面
+    if resquest.method == "GET":
+        return render(resquest, 'edithero.html', {"hero": hero})
+    elif resquest.method == "POST":
+        hero.name = resquest.POST.get("heroname")
+        hero.content = resquest.POST.get("herocontent")
+        hero.gender = resquest.POST.get("sex")
+        hero.save()
+        url = reverse("booktest:detail", args=(hero.book.id,))
+        return redirect(to=url)
+
+
+def editbook(resquest, Bookid):
+    book = Book.objects.get(id=Bookid)
+    if resquest.method == "GET":
+        return render(resquest, 'editbook.html', {"book": book})
+    elif resquest.method == "POST":
+        book.title = resquest.POST.get("booktitle")
+        book.price = resquest.POST.get("bookprice")
+        book.pub_date = resquest.POST.get("pub_date")
+        book.save()
+        url = reverse("booktest:index")
+        return redirect(to=url)
 # 使用Django 模板
+
 # MVT
